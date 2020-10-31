@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krasa.wakeonlan.controller.ErrorController">
+	<center>
+				<TextArea fx:id="errorMessage" editable="false" wrapText="true" />
+	</center>
+	<bottom>
+		<HBox alignment="CENTER">
+         <Group>
+            <children>
+      			<Button fx:id="copyAndClose" onAction="#copyAndClose" text="Copy and close" />
+      			<Button layoutX="236.0" onAction="#close" text="Close" />
+            </children>
+         </Group>
+		</HBox>
+	</bottom>
+</BorderPane>
