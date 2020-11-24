@@ -60,6 +60,19 @@ public class MainController implements Initializable {
 		}
 	}
 
+	@FXML
+	public void remoteDesktop(ActionEvent actionEvent) throws IOException {
+		String client = comboBox.getSelectionModel().getSelectedItem();
+		SettingsData data = Settings.load();
+		SettingsData.WakeUpClient clientByName = data.getClientByName(client);
+		if (clientByName != null) {
+			ProcessBuilder processBuilder = new ProcessBuilder("mstsc", "/v:" + clientByName.getIp(), "/f");
+			processBuilder.start();
+		} else {
+			throw new RuntimeException("Client not found " + client);
+		}
+	}
+
 	private void displayException(String ip, Throwable e) {
 		log.error(ip, e);
 		StringWriter errorMsg = new StringWriter();

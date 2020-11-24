@@ -1,8 +1,9 @@
 package krasa.wakeonlan;
 
-import krasa.wakeonlan.controller.*;
+import krasa.wakeonlan.controller.Settings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsData {
 	String password = "";
@@ -66,9 +67,9 @@ public class SettingsData {
 		Settings.save(this);
 	}
 
-	public WakeUpClient getClientByName(String ip) {
+	public WakeUpClient getClientByName(String name) {
 		for (WakeUpClient client : clients) {
-			if (client.getName().equals(ip)) {
+			if (client.getName().equals(name)) {
 				return client;
 			}
 		}
