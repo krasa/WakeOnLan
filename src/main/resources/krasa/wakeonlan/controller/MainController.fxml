@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krasa.wakeonlan.controller.MainController">
    <children>
        <FlowPane hgap="10.0" prefHeight="45.0" prefWidth="414.0" vgap="10.0">
          <children>
-            <Label prefHeight="17.0" prefWidth="15.0" text="IP" />
              <ComboBox fx:id="comboBox" prefHeight="25.0" prefWidth="203.0"/>
              <Button mnemonicParsing="false" onAction="#wakeUp" prefHeight="25.0" prefWidth="65.0"
                      text="Probudit"/>
