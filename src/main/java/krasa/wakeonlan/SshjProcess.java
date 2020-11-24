@@ -33,6 +33,9 @@ public class SshjProcess {
 //			ssh.loadKnownHosts();
 			mainController.append("Connecting to: " + settingsData.getAddress());
 			String[] split = settingsData.getAddress().split(":");
+			if (split.length != 2) {
+				throw new IllegalArgumentException("invalid server address (ip:port)");
+			}
 			ssh.connect(split[0], Integer.parseInt(split[1]));
 			ssh.authPassword(settingsData.getUser(), settingsData.getPassword());
 			String command = settingsData.getCommand().replace("<ip>", ip);
