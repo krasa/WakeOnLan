@@ -1,4 +1,4 @@
-package krasa.wakeonlan;
+package krasa.wakeonlan.utils;
 
 
 public class ThreadDump {

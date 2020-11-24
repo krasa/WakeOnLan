@@ -1,4 +1,5 @@
 HELP.md
+settings.json
 /logs/
 .gradle
 build/

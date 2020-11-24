@@ -1,7 +1,7 @@
-package krasa.wakeonlan;
+package krasa.wakeonlan.utils;
 
-import javafx.scene.Node;
-import javafx.stage.Stage;
+import javafx.scene.*;
+import javafx.stage.*;
 
 public class UiUtils {
 	public static Stage getStage(Node node) {

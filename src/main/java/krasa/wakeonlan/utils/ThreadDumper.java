@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package krasa.wakeonlan;
+package krasa.wakeonlan.utils;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import java.text.SimpleDateFormat;
+import java.io.*;
+import java.lang.management.*;
+import java.text.*;
 import java.util.*;
 
 /**

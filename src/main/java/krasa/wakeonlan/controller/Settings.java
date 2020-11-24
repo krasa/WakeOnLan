@@ -1,21 +1,17 @@
 package krasa.wakeonlan.controller;
 
-import com.google.gson.Gson;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import krasa.wakeonlan.SettingsData;
-import krasa.wakeonlan.UiUtils;
+import com.google.gson.*;
+import javafx.event.*;
+import javafx.fxml.*;
+import javafx.scene.control.*;
+import krasa.wakeonlan.*;
+import krasa.wakeonlan.utils.*;
+import org.slf4j.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
+import java.util.*;
 
 public class Settings  implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(Settings.class);

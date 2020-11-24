@@ -1,16 +1,12 @@
 package krasa.wakeonlan;
 
-import krasa.wakeonlan.controller.MainController;
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import krasa.wakeonlan.controller.*;
+import net.schmizz.sshj.*;
+import net.schmizz.sshj.connection.channel.direct.*;
+import net.schmizz.sshj.transport.verification.*;
+import org.slf4j.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class SshjProcess {
 	private static final Logger log = LoggerFactory.getLogger(SshjProcess.class);
@@ -34,9 +30,10 @@ public class SshjProcess {
 		try {
 			ssh = new SSHClient();
 			ssh.addHostKeyVerifier(new PromiscuousVerifier());
-			ssh.loadKnownHosts();
+//			ssh.loadKnownHosts();
 			mainController.append("Connecting to: " + settingsData.getAddress());
-			ssh.connect(settingsData.getAddress());
+			String[] split = settingsData.getAddress().split(":");
+			ssh.connect(split[0], Integer.parseInt(split[1]));
 			ssh.authPassword(settingsData.getUser(), settingsData.getPassword());
 			String command = settingsData.getCommand().replace("<ip>", ip);
 
