@@ -6,10 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import krasa.wakeonlan.controller.MainController;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import krasa.wakeonlan.controller.MainController;
 
 import java.util.prefs.Preferences;
 
@@ -60,7 +60,7 @@ public class JavaFxApplication extends Application {
 
 		// enable style
 		scene.getStylesheets().add(styleSheetURL);
-		stage.setTitle("Vzbuzovac");
+		stage.setTitle("Probouzeč PC");
 		stage.setScene(scene);
 		stage.setOnCloseRequest((final WindowEvent event) -> {
 			Preferences preferences = Preferences.userRoot().node(NODE_NAME);
