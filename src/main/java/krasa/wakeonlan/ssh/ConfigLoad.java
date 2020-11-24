@@ -73,8 +73,8 @@ public class ConfigLoad {
 		List<SettingsData.WakeUpClient> wakeUpIps = new ArrayList<>();
 		while (keepReceiving() && (line = r.readLine()) != null) {
 			String[] split = line.split("=");
-			if (split.length == 2) {
-				wakeUpIps.add(new SettingsData.WakeUpClient(split[0], split[1]));
+			if (split.length == 3) {
+				wakeUpIps.add(new SettingsData.WakeUpClient(split[0], split[1], split[2]));
 			} else {
 				log.error("Invalid format: " + line);
 			}

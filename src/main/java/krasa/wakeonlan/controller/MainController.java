@@ -101,13 +101,14 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
+
 		SettingsData data = Settings.load();
 		String lastClient = data.getLastClient();
 		wakeUpAddress.setText(lastClient);
 		if (Strings.isBlank(lastClient)) {
 			List<SettingsData.WakeUpClient> clients = data.getClients();
 			for (SettingsData.WakeUpClient client : clients) {
-				wakeUpAddress.setText(client.getIp());
+				wakeUpAddress.setText(client.getName());
 				break;
 			}
 		}

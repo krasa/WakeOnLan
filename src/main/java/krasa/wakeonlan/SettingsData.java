@@ -66,9 +66,9 @@ public class SettingsData {
 		Settings.save(this);
 	}
 
-	public WakeUpClient getClientByIp(String ip) {
+	public WakeUpClient getClientByName(String ip) {
 		for (WakeUpClient client : clients) {
-			if (client.getIp().equals("ip")) {
+			if (client.getName().equals(ip)) {
 				return client;
 			}
 		}
@@ -79,8 +79,10 @@ public class SettingsData {
 	public static class WakeUpClient {
 		String ip;
 		String mac;
+		String name;
 
-		public WakeUpClient(String ip, String mac) {
+		public WakeUpClient(String name, String ip, String mac) {
+			this.name = name;
 			this.ip = ip;
 			this.mac = mac;
 		}
@@ -101,11 +103,20 @@ public class SettingsData {
 			this.mac = mac;
 		}
 
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
 		@Override
 		public String toString() {
 			return "WakeUpClient{" +
 				"ip='" + ip + '\'' +
 				", mac='" + mac + '\'' +
+				", name='" + name + '\'' +
 				'}';
 		}
 	}

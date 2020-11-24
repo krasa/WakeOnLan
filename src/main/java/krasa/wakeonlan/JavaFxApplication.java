@@ -40,7 +40,11 @@ public class JavaFxApplication extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		new ConfigLoad(Settings.load()).execute();
+		try {
+			new ConfigLoad(Settings.load()).execute();
+		} catch (Throwable e) {
+			Notifications.showError(Thread.currentThread(), e);
+		}
 
 		FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
 		Parent root = fxWeaver.loadView(MainController.class);

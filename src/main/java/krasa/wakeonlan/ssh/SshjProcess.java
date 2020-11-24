@@ -42,12 +42,12 @@ public class SshjProcess {
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
-			SettingsData.WakeUpClient clientByIp = settingsData.getClientByIp(ip);
-			if (clientByIp == null) {
+			SettingsData.WakeUpClient client = settingsData.getClientByName(ip);
+			if (client == null) {
 				throw new IllegalArgumentException("MAC not found for ip:" + ip);
 			}
 
-			String command = settingsData.getCommand().replace("<mac>", clientByIp.getMac());
+			String command = settingsData.getCommand().replace("<mac>", client.getMac());
 			mainController.append("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 
