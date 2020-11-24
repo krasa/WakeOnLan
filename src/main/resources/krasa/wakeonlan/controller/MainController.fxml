@@ -10,9 +10,9 @@
          <children>
             <Label prefHeight="17.0" prefWidth="15.0" text="IP" />
              <ComboBox fx:id="comboBox" prefHeight="25.0" prefWidth="203.0"/>
-             <Button defaultButton="true" mnemonicParsing="false" onAction="#wakeUp" prefHeight="25.0" prefWidth="65.0"
+             <Button mnemonicParsing="false" onAction="#wakeUp" prefHeight="25.0" prefWidth="65.0"
                      text="Probudit"/>
-             <Button mnemonicParsing="false" onAction="#remoteDesktop" prefHeight="25.0" prefWidth="65.0" text="RDP"/>
+             <Button mnemonicParsing="false" onAction="#remoteDesktop" text="Vzálená plocha"/>
          </children>
          <padding>
             <Insets left="10.0" top="10.0" />
