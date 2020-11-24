@@ -1,17 +1,22 @@
 package krasa.wakeonlan;
 
-import javafx.application.*;
-import javafx.scene.*;
-import javafx.scene.image.*;
-import javafx.stage.*;
-import krasa.wakeonlan.controller.*;
-import krasa.wakeonlan.ssh.*;
-import net.rgielen.fxweaver.core.*;
-import org.slf4j.*;
-import org.springframework.boot.builder.*;
-import org.springframework.context.*;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import krasa.wakeonlan.controller.MainController;
+import krasa.wakeonlan.controller.Settings;
+import krasa.wakeonlan.ssh.ConfigLoad;
+import net.rgielen.fxweaver.core.FxWeaver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
 
 public class JavaFxApplication extends Application {
@@ -24,7 +29,7 @@ public class JavaFxApplication extends Application {
 	private static final double DEFAULT_Y = 10;
 	private static final double DEFAULT_WIDTH = 800;
 	private static final double DEFAULT_HEIGHT = 600;
-	private static final String NODE_NAME = "Vzbuzovac";
+    private static final String NODE_NAME = "Propouzeč PC";
 
 	private ConfigurableApplicationContext applicationContext;
 
