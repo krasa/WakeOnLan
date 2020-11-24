@@ -63,10 +63,10 @@ public class JavaFxApplication extends Application {
 		double height = pref.getDouble(WINDOW_HEIGHT, DEFAULT_HEIGHT);
 		stage.setX(x);
 		stage.setY(y);
-		stage.setWidth(width);
-		stage.setHeight(height);
-		
-		
+//		stage.setWidth(width);
+//		stage.setHeight(height);
+
+
 		String styleSheetURL = JavaFxApplication.class.getResource("dark.css").toString();
 //		stage.getIcons().add(MyUtils.getImage("icon.png"));
 
