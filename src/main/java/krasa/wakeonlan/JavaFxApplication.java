@@ -1,20 +1,21 @@
 package krasa.wakeonlan;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import krasa.wakeonlan.controller.MainController;
-import net.rgielen.fxweaver.core.FxWeaver;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.scene.image.*;
+import javafx.stage.*;
+import krasa.wakeonlan.controller.*;
+import krasa.wakeonlan.ssh.*;
+import net.rgielen.fxweaver.core.*;
+import org.slf4j.*;
+import org.springframework.boot.builder.*;
+import org.springframework.context.*;
 
-import java.util.prefs.Preferences;
+import java.util.prefs.*;
 
 
 public class JavaFxApplication extends Application {
+	private static final Logger log = LoggerFactory.getLogger(JavaFxApplication.class);
 	private static final String WINDOW_POSITION_X = "Window_Position_X";
 	private static final String WINDOW_POSITION_Y = "Window_Position_Y";
 	private static final String WINDOW_WIDTH = "Window_Width";
@@ -39,11 +40,13 @@ public class JavaFxApplication extends Application {
 
 	@Override
 	public void start(Stage stage) {
+		new ConfigLoad(Settings.load()).execute();
+
 		FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
 		Parent root = fxWeaver.loadView(MainController.class);
 		Scene scene = new Scene(root);
-		
-		
+
+
 		Preferences pref = Preferences.userRoot().node(NODE_NAME);
 		double x = pref.getDouble(WINDOW_POSITION_X, DEFAULT_X);
 		double y = pref.getDouble(WINDOW_POSITION_Y, DEFAULT_Y);
@@ -69,6 +72,9 @@ public class JavaFxApplication extends Application {
 			preferences.putDouble(WINDOW_WIDTH, stage.getWidth());
 			preferences.putDouble(WINDOW_HEIGHT, stage.getHeight());
 		});
+
+		stage.getIcons().add(new Image(JavaFxApplication.class.getResourceAsStream("/krasa/wakeonlan/icon.png")));
+		log.info("show");
 		stage.show();
 	}
 

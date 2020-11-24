@@ -10,6 +10,7 @@ import javafx.stage.*;
 import krasa.wakeonlan.*;
 import krasa.wakeonlan.utils.*;
 import net.rgielen.fxweaver.core.*;
+import org.apache.logging.log4j.util.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
@@ -32,10 +33,10 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void wakeUp(ActionEvent actionEvent) {
-		 SettingsData data = Settings.load();
+		SettingsData data = Settings.load();
 		status.clear();
 		String ip = wakeUpAddress.getText();
-		data.addWakeUpIp(ip);
+		data.setLastClient(ip);
 		data.save();
 		try {
 			networkService.wakeUp(ip, this);
@@ -53,13 +54,13 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void ping(ActionEvent actionEvent) {
-		String ip = wakeUpAddress.getText();    
-		
+		String ip = wakeUpAddress.getText();
+
 		try {
 			boolean ping = networkService.ping(ip);
 			String s = ping ? "OK" : "ERROR";
 			status.setText("Ping " + ip + ": " + s + "\n");
-			               
+
 		} catch (Throwable e) {
 			displayException(ip, e);
 		}
@@ -69,14 +70,14 @@ public class MainController implements Initializable {
 	public void settings(ActionEvent actionEvent) {
 		Stage dialog = new Stage();
 		dialog.initModality(Modality.APPLICATION_MODAL);
-		               
+
 		// enable style
 		FXMLLoader loader = new FXMLLoader(Settings.class.getResource("Settings.fxml"));
 		try {
 			Parent root = loader.load();
 			Settings controller = (Settings) loader.getController();
 			Scene scene = new Scene(root);
-			dialog.setScene(scene);                  
+			dialog.setScene(scene);
 			String styleSheetURL = JavaFxApplication.class.getResource("dark.css").toString();
 			scene.getStylesheets().add(styleSheetURL);
 			dialog.setTitle("Nastaveni");
@@ -100,10 +101,15 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		SettingsData	data = Settings.load();
-		List<String> wakeUpIps = data.getWakeUpIps();
-		if (!wakeUpIps.isEmpty()) {
-			wakeUpAddress.setText(wakeUpIps.get(wakeUpIps.size() - 1));
+		SettingsData data = Settings.load();
+		String lastClient = data.getLastClient();
+		wakeUpAddress.setText(lastClient);
+		if (Strings.isBlank(lastClient)) {
+			List<SettingsData.WakeUpClient> clients = data.getClients();
+			for (SettingsData.WakeUpClient client : clients) {
+				wakeUpAddress.setText(client.getIp());
+				break;
+			}
 		}
 	}
 
@@ -113,7 +119,7 @@ public class MainController implements Initializable {
 
 	public void append(String line) {
 		Platform.runLater(() -> status.appendText(line + "\n"));
-		
+
 	}
 
 	public void kill(ActionEvent actionEvent) {

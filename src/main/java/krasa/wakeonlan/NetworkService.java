@@ -1,16 +1,13 @@
 package krasa.wakeonlan;
 
-import krasa.wakeonlan.controller.MainController;
-import krasa.wakeonlan.controller.Settings;
-import org.springframework.stereotype.Service;
+import krasa.wakeonlan.controller.*;
+import krasa.wakeonlan.ssh.*;
+import org.springframework.stereotype.*;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 @Service
 public class NetworkService {

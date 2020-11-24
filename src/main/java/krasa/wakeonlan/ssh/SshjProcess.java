@@ -1,5 +1,6 @@
-package krasa.wakeonlan;
+package krasa.wakeonlan.ssh;
 
+import krasa.wakeonlan.*;
 import krasa.wakeonlan.controller.*;
 import net.schmizz.sshj.*;
 import net.schmizz.sshj.connection.channel.direct.*;
@@ -38,10 +39,15 @@ public class SshjProcess {
 			}
 			ssh.connect(split[0], Integer.parseInt(split[1]));
 			ssh.authPassword(settingsData.getUser(), settingsData.getPassword());
-			String command = settingsData.getCommand().replace("<ip>", ip);
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
+			SettingsData.WakeUpClient clientByIp = settingsData.getClientByIp(ip);
+			if (clientByIp == null) {
+				throw new IllegalArgumentException("MAC not found for ip:" + ip);
+			}
+
+			String command = settingsData.getCommand().replace("<mac>", clientByIp.getMac());
 			mainController.append("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 
