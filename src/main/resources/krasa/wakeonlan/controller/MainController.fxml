@@ -12,7 +12,7 @@
       <FlowPane hgap="10.0" prefWidth="200.0" vgap="10.0">
          <children>
             <Label prefHeight="17.0" prefWidth="15.0" text="IP" />
-             <ComboBox fx:id="wakeUpPerson" prefHeight="25.0" prefWidth="239.0"/>
+             <ComboBox fx:id="comboBox" prefHeight="25.0" prefWidth="239.0"/>
              <Button defaultButton="true" mnemonicParsing="false" onAction="#wakeUp" text="Probudit"/>
          </children>
          <padding>

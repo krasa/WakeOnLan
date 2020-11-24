@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -32,6 +33,7 @@ import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 @Component
 @FxmlView
@@ -39,22 +41,22 @@ public class MainController implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
 
-    public TextArea status;
-    public ComboBox wakeUpPerson;
-    @Autowired
+	public TextArea status;
+	public ComboBox<String> comboBox;
+	@Autowired
 	NetworkService networkService;
 
 	@FXML
 	public void wakeUp(ActionEvent actionEvent) {
 		SettingsData data = Settings.load();
 		status.clear();
-        String ip = wakeUpPerson.getSelectionModel();
-		data.setLastClient(ip);
+		String client = comboBox.getSelectionModel().getSelectedItem();
+		data.setLastClient(client);
 		data.save();
 		try {
-			networkService.wakeUp(ip, this);
+			networkService.wakeUp(client, this);
 		} catch (Throwable e) {
-			displayException(ip, e);
+			displayException(client, e);
 		}
 	}
 
@@ -63,20 +65,6 @@ public class MainController implements Initializable {
 		StringWriter errorMsg = new StringWriter();
 		e.printStackTrace(new PrintWriter(errorMsg));
 		status.appendText(errorMsg.toString() + "\n");
-	}
-
-	@FXML
-	public void ping(ActionEvent actionEvent) {
-        String ip = wakeUpPerson.getSelectionModel().getSelectedItem();
-
-		try {
-			boolean ping = networkService.ping(ip);
-			String s = ping ? "OK" : "ERROR";
-			status.setText("Ping " + ip + ": " + s + "\n");
-
-		} catch (Throwable e) {
-			displayException(ip, e);
-		}
 	}
 
 	@FXML
@@ -114,14 +102,16 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-
 		SettingsData data = Settings.load();
+		List<SettingsData.WakeUpClient> clients = data.getClients();
+		comboBox.getItems().addAll(clients.stream().map(SettingsData.WakeUpClient::getName).collect(Collectors.toList()));
+
 		String lastClient = data.getLastClient();
-        wakeUpPerson.setText(lastClient);
+		SingleSelectionModel<String> selectionModel = comboBox.getSelectionModel();
+		selectionModel.select(lastClient);
 		if (Strings.isBlank(lastClient)) {
-			List<SettingsData.WakeUpClient> clients = data.getClients();
 			for (SettingsData.WakeUpClient client : clients) {
-				wakeUpAddress.setText(client.getName());
+				selectionModel.select(client.getName());
 				break;
 			}
 		}
