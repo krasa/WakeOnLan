@@ -1,24 +1,37 @@
 package krasa.wakeonlan.controller;
 
-import javafx.application.*;
-import javafx.event.*;
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
-import javafx.stage.*;
-import krasa.wakeonlan.*;
-import krasa.wakeonlan.utils.*;
-import net.rgielen.fxweaver.core.*;
-import org.apache.logging.log4j.util.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import krasa.wakeonlan.JavaFxApplication;
+import krasa.wakeonlan.NetworkService;
+import krasa.wakeonlan.SettingsData;
+import krasa.wakeonlan.utils.ThreadDump;
+import krasa.wakeonlan.utils.ThreadDumper;
+import net.rgielen.fxweaver.core.FxmlView;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.lang.management.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
 @Component
 @FxmlView
@@ -26,16 +39,16 @@ public class MainController implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
 
-	public TextField wakeUpAddress;
-	public TextArea status;
-	@Autowired
+    public TextArea status;
+    public ComboBox wakeUpPerson;
+    @Autowired
 	NetworkService networkService;
 
 	@FXML
 	public void wakeUp(ActionEvent actionEvent) {
 		SettingsData data = Settings.load();
 		status.clear();
-		String ip = wakeUpAddress.getText();
+        String ip = wakeUpPerson.getSelectionModel();
 		data.setLastClient(ip);
 		data.save();
 		try {
@@ -54,7 +67,7 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void ping(ActionEvent actionEvent) {
-		String ip = wakeUpAddress.getText();
+        String ip = wakeUpPerson.getSelectionModel().getSelectedItem();
 
 		try {
 			boolean ping = networkService.ping(ip);
@@ -104,7 +117,7 @@ public class MainController implements Initializable {
 
 		SettingsData data = Settings.load();
 		String lastClient = data.getLastClient();
-		wakeUpAddress.setText(lastClient);
+        wakeUpPerson.setText(lastClient);
 		if (Strings.isBlank(lastClient)) {
 			List<SettingsData.WakeUpClient> clients = data.getClients();
 			for (SettingsData.WakeUpClient client : clients) {
