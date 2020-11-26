@@ -1,4 +1,4 @@
-package krasa.wakeonlan;
+package krasa.wakeonlan.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import krasa.wakeonlan.controller.ErrorController;
+import krasa.wakeonlan.JavaFxApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

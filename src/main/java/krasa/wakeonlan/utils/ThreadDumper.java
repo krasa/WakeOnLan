@@ -15,9 +15,13 @@
  */
 package krasa.wakeonlan.utils;
 
-import java.io.*;
-import java.lang.management.*;
-import java.text.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -27,14 +31,12 @@ public class ThreadDumper {
 	private ThreadDumper() {
 	}
 
-	
 	public static String dumpThreadsToString() {
 		StringWriter writer = new StringWriter();
 		dumpThreadsToFile(ManagementFactory.getThreadMXBean(), writer);
 		return writer.toString();
 	}
 
-	
 	public static String dumpEdtStackTrace(ThreadInfo[] threadInfos) {
 		StringWriter writer = new StringWriter();
 		if (threadInfos.length > 0) {
@@ -44,21 +46,21 @@ public class ThreadDumper {
 		return writer.toString();
 	}
 
-	
+
 	public static ThreadInfo[] getThreadInfos() {
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		return sort(threadMXBean.dumpAllThreads(false, false));
 	}
 
-	
-	public static ThreadDump getThreadDumpInfo( final ThreadMXBean threadMXBean) {
+
+	public static ThreadDump getThreadDumpInfo(final ThreadMXBean threadMXBean) {
 		StringWriter writer = new StringWriter();
 		StackTraceElement[] edtStack = dumpThreadsToFile(threadMXBean, writer);
 		return new ThreadDump(writer.toString(), edtStack);
 	}
 
-	
-	private static StackTraceElement[] dumpThreadsToFile( ThreadMXBean threadMXBean,  Writer f) {
+
+	private static StackTraceElement[] dumpThreadsToFile(ThreadMXBean threadMXBean, Writer f) {
 		StackTraceElement[] edtStack = null;
 		boolean dumpSuccessful = false;
 
@@ -79,7 +81,7 @@ public class ThreadDumper {
 		return edtStack;
 	}
 
-	private static StackTraceElement[] dumpThreadInfos( ThreadInfo[] threadInfo,  Writer f) {
+	private static StackTraceElement[] dumpThreadInfos(ThreadInfo[] threadInfo, Writer f) {
 		List<ThreadInfo> list = moveEdtToEnd(threadInfo);
 		try {
 			f.write("Generated: " + new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()) + "\n");
@@ -99,8 +101,8 @@ public class ThreadDumper {
 		return edtStack;
 	}
 
-	
-	private static List<ThreadInfo> moveEdtToEnd( ThreadInfo[] threadInfo) {
+
+	private static List<ThreadInfo> moveEdtToEnd(ThreadInfo[] threadInfo) {
 		List<ThreadInfo> arrayList = new ArrayList<>(Arrays.asList(threadInfo));
 		for (int i = 0; i < arrayList.size(); i++) {
 			ThreadInfo info = arrayList.get(i);
@@ -114,8 +116,8 @@ public class ThreadDumper {
 		return arrayList;
 	}
 
-	
-	private static ThreadInfo[] sort( ThreadInfo[] threads) {
+
+	private static ThreadInfo[] sort(ThreadInfo[] threads) {
 		Arrays.sort(threads, new Comparator<ThreadInfo>() {
 			@Override
 			public int compare(ThreadInfo o1, ThreadInfo o2) {
@@ -126,11 +128,11 @@ public class ThreadDumper {
 		return threads;
 	}
 
-	private static void dumpThreadInfo( ThreadInfo info,  Writer f) {
+	private static void dumpThreadInfo(ThreadInfo info, Writer f) {
 		dumpCallStack(info, f, info.getStackTrace());
 	}
 
-	private static void dumpCallStack( ThreadInfo info,  Writer f,  StackTraceElement[] stackTraceElements) {
+	private static void dumpCallStack(ThreadInfo info, Writer f, StackTraceElement[] stackTraceElements) {
 		try {
 			StringBuilder sb = new StringBuilder("\"").append(info.getThreadName()).append("\"");
 			sb.append(" prio=0 tid=0x0 nid=0x0 ").append(getReadableState(info.getThreadState())).append("\n");
@@ -156,7 +158,7 @@ public class ThreadDumper {
 		}
 	}
 
-	private static void printStackTrace( Writer f,  StackTraceElement[] stackTraceElements) {
+	private static void printStackTrace(Writer f, StackTraceElement[] stackTraceElements) {
 		try {
 			for (StackTraceElement element : stackTraceElements) {
 				f.write("\tat " + element.toString() + "\n");
@@ -166,7 +168,7 @@ public class ThreadDumper {
 		}
 	}
 
-	private static String getReadableState( Thread.State state) {
+	private static String getReadableState(Thread.State state) {
 		switch (state) {
 			case BLOCKED:
 				return "blocked";

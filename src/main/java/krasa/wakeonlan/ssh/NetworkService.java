@@ -1,8 +1,9 @@
-package krasa.wakeonlan;
+package krasa.wakeonlan.ssh;
 
 import krasa.wakeonlan.controller.MainController;
-import krasa.wakeonlan.controller.Settings;
-import krasa.wakeonlan.ssh.SshjProcess;
+import krasa.wakeonlan.controller.Notifications;
+import krasa.wakeonlan.data.Config;
+import krasa.wakeonlan.data.UserData;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,8 +28,8 @@ public class NetworkService {
 		executorService.execute(xxx);
 	}
 
-	public void wakeUp(String ip, MainController mainController) throws IOException {
-		SshjProcess sshjProcess = new SshjProcess(ip, Settings.load());
+	public void wakeUp(UserData.WakeUpUser user, MainController mainController, Config config) throws IOException {
+		SshjProcess sshjProcess = new SshjProcess(user, config);
 		CompletableFuture.supplyAsync(() -> {
 			try {
 				processList.add(sshjProcess);
@@ -51,7 +52,7 @@ public class NetworkService {
 	public void kill() {
 		for (SshjProcess sshjProcess : processList) {
 			sshjProcess.stop();
-			
+
 			new Timer(true).schedule(new TimerTask() {
 				@Override
 				public void run() {

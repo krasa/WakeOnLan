@@ -1,7 +1,7 @@
 package krasa.wakeonlan.ssh;
 
-import krasa.wakeonlan.SettingsData;
-import krasa.wakeonlan.controller.Settings;
+import krasa.wakeonlan.data.Config;
+import krasa.wakeonlan.data.UserData;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
@@ -15,8 +15,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigLoad {
-	private static final Logger log = LoggerFactory.getLogger(ConfigLoad.class);
+public class UsersLoad {
+	private static final Logger log = LoggerFactory.getLogger(UsersLoad.class);
 	protected static final Logger sshOutput = LoggerFactory.getLogger("ssh");
 
 
@@ -24,24 +24,24 @@ public class ConfigLoad {
 	private SSHClient ssh;
 
 	private volatile boolean stop;
-	private SettingsData settingsData;
+	private Config config;
 
 
-	public ConfigLoad() {
-		settingsData = Settings.load();
+	public UsersLoad(Config config) {
+		this.config = config;
 	}
 
 	public void execute() {
 		try {
 			ssh = new SSHClient();
 			ssh.addHostKeyVerifier(new PromiscuousVerifier());
-			log.info("Connecting to: " + settingsData.getAddress());
-			String[] split = settingsData.getAddress().split(":");
+			log.info("Connecting to: " + config.getAddress());
+			String[] split = config.getAddress().split(":");
 			if (split.length != 2) {
 				throw new IllegalArgumentException("invalid server address (ip:port)");
 			}
 			ssh.connect(split[0], Integer.parseInt(split[1]));
-			ssh.authPassword(settingsData.getUser(), settingsData.getPassword());
+			ssh.authPassword(config.getUser(), config.getPassword());
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
@@ -60,7 +60,7 @@ public class ConfigLoad {
 			}
 			log.info("exit status: " + exitStatus);
 		} catch (Throwable e) {
-			throw new RuntimeException("Config load failed. Server=" + settingsData.getAddress(), e);
+			throw new RuntimeException("Config load failed. Server=" + config.getAddress(), e);
 		} finally {
 			try {
 				releaseResources();
@@ -74,20 +74,20 @@ public class ConfigLoad {
 	public void receiveLine(InputStream inputStream) throws IOException {
 		BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
-
-		List<SettingsData.WakeUpClient> wakeUpIps = new ArrayList<>();
+		UserData userData = UserData.load();
+		List<UserData.WakeUpUser> wakeUpIps = new ArrayList<>();
 		while (keepReceiving() && (line = r.readLine()) != null) {
 			String[] split = line.split("=");
 			if (split.length == 3) {
-				wakeUpIps.add(new SettingsData.WakeUpClient(split[0], split[1], split[2]));
+				wakeUpIps.add(new UserData.WakeUpUser(split[0], split[1], split[2]));
 			} else {
 				log.error("Invalid format: " + line);
 			}
 			sshOutput.info(line);
 		}
-		log.info("setClients: " + wakeUpIps);
-		settingsData.setClients(wakeUpIps);
-		Settings.save(settingsData);
+		log.info("setUsers: " + wakeUpIps);
+		userData.setUsers(wakeUpIps);
+		UserData.save(userData);
 		log.debug("receiving done");
 	}
 

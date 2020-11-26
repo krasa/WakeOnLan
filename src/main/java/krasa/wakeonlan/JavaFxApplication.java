@@ -11,6 +11,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import krasa.wakeonlan.controller.MainController;
+import krasa.wakeonlan.controller.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

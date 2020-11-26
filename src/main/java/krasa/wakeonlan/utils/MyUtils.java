@@ -1,9 +1,9 @@
 package krasa.wakeonlan.utils;
 
-import javafx.scene.image.*;
-import krasa.wakeonlan.*;
+import javafx.scene.image.Image;
+import krasa.wakeonlan.JavaFxApplication;
 
-import java.util.*;
+import java.util.Objects;
 
 public class MyUtils {
 

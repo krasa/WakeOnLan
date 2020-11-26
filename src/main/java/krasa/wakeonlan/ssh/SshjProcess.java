@@ -1,20 +1,25 @@
 package krasa.wakeonlan.ssh;
 
-import krasa.wakeonlan.*;
-import krasa.wakeonlan.controller.*;
-import net.schmizz.sshj.*;
-import net.schmizz.sshj.connection.channel.direct.*;
-import net.schmizz.sshj.transport.verification.*;
-import org.slf4j.*;
+import krasa.wakeonlan.controller.MainController;
+import krasa.wakeonlan.data.Config;
+import krasa.wakeonlan.data.UserData;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class SshjProcess {
 	private static final Logger log = LoggerFactory.getLogger(SshjProcess.class);
 	protected static final Logger sshOutput = LoggerFactory.getLogger("ssh");
 
-	private final String ip;
-	private final SettingsData settingsData;
+	private final UserData.WakeUpUser user;
+	private final Config config;
 
 	private Session session;
 	private SSHClient ssh;
@@ -22,9 +27,15 @@ public class SshjProcess {
 	private volatile boolean stop;
 
 
-	public SshjProcess(String ip, SettingsData settingsData) {
-		this.ip = ip;
-		this.settingsData = settingsData;
+	public SshjProcess(UserData.WakeUpUser user, Config config) {
+		if (config == null) {
+			throw new IllegalArgumentException("config is null");
+		}
+		if (user == null) {
+			throw new IllegalArgumentException("user is null");
+		}
+		this.user = user;
+		this.config = config;
 	}
 
 	public void execute(MainController mainController) throws Throwable {
@@ -32,22 +43,18 @@ public class SshjProcess {
 			ssh = new SSHClient();
 			ssh.addHostKeyVerifier(new PromiscuousVerifier());
 //			ssh.loadKnownHosts();
-			mainController.append("Connecting to: " + settingsData.getAddress());
-			String[] split = settingsData.getAddress().split(":");
+			mainController.append("Connecting to: " + config.getAddress());
+			String[] split = config.getAddress().split(":");
 			if (split.length != 2) {
 				throw new IllegalArgumentException("invalid server address (ip:port)");
 			}
 			ssh.connect(split[0], Integer.parseInt(split[1]));
-			ssh.authPassword(settingsData.getUser(), settingsData.getPassword());
+			ssh.authPassword(config.getUser(), config.getPassword());
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
-			SettingsData.WakeUpClient client = settingsData.getClientByName(ip);
-			if (client == null) {
-				throw new IllegalArgumentException("MAC not found for ip:" + ip);
-			}
 
-			String command = settingsData.getCommand().replace("<mac>", client.getMac());
+			String command = config.getCommand().replace("<mac>", user.getMac());
 			mainController.append("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 

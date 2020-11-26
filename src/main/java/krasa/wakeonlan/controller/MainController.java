@@ -15,10 +15,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import krasa.wakeonlan.JavaFxApplication;
-import krasa.wakeonlan.NetworkService;
-import krasa.wakeonlan.Notifications;
-import krasa.wakeonlan.SettingsData;
-import krasa.wakeonlan.ssh.ConfigLoad;
+import krasa.wakeonlan.data.Config;
+import krasa.wakeonlan.data.UserData;
+import krasa.wakeonlan.ssh.NetworkService;
+import krasa.wakeonlan.ssh.UsersLoad;
 import krasa.wakeonlan.utils.ThreadDump;
 import krasa.wakeonlan.utils.ThreadDumper;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
@@ -39,8 +37,10 @@ public class MainController implements Initializable {
 
 
 	public TextArea status;
-	public ComboBox<String> comboBox;
-	NetworkService networkService;
+	public ComboBox<String> usersComboBox;
+
+	private NetworkService networkService;
+	private volatile Config config = new Config();
 
 	public MainController() {
 		networkService = new NetworkService();
@@ -48,36 +48,33 @@ public class MainController implements Initializable {
 
 	@FXML
 	public void wakeUp(ActionEvent actionEvent) {
-		SettingsData data = Settings.load();
+		UserData data = UserData.load();
 		status.clear();
-		String client = comboBox.getSelectionModel().getSelectedItem();
-		data.setLastClient(client);
+		String user = usersComboBox.getSelectionModel().getSelectedItem();
+		data.setLastUser(user);
 		data.save();
 		try {
-			networkService.wakeUp(client, this);
+			networkService.wakeUp(UserData.load().getUserByName(user), this, config);
 		} catch (Throwable e) {
-			displayException(client, e);
+			displayException(user, e);
 		}
 	}
 
 	@FXML
 	public void remoteDesktop(ActionEvent actionEvent) throws IOException {
-		String client = comboBox.getSelectionModel().getSelectedItem();
-		SettingsData data = Settings.load();
-		SettingsData.WakeUpClient clientByName = data.getClientByName(client);
-		if (clientByName != null) {
-			ProcessBuilder processBuilder = new ProcessBuilder("mstsc", "/v:" + clientByName.getIp(), "/f");
+		String userName = usersComboBox.getSelectionModel().getSelectedItem();
+		UserData.WakeUpUser user = UserData.load().getUserByName(userName);
+		if (user != null) {
+			ProcessBuilder processBuilder = new ProcessBuilder("mstsc", "/v:" + user.getIp(), "/f");
 			processBuilder.start();
 		} else {
-			throw new RuntimeException("Client not found " + client);
+			throw new RuntimeException("User not found " + userName);
 		}
 	}
 
 	private void displayException(String ip, Throwable e) {
 		log.error(ip, e);
-		StringWriter errorMsg = new StringWriter();
-		e.printStackTrace(new PrintWriter(errorMsg));
-		status.appendText(errorMsg.toString() + "\n");
+		status.appendText(Notifications.stacktraceToString(e) + "\n");
 	}
 
 	@FXML
@@ -117,9 +114,14 @@ public class MainController implements Initializable {
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		networkService.async(() -> {
 			try {
-				new ConfigLoad().execute();
+				config = Config.load();
+				Platform.runLater(() -> append("Načítání uživatelů..."));
+				new UsersLoad(config).execute();
+				Platform.runLater(() -> append("OK"));
 				Platform.runLater(this::fillComboBox);
 			} catch (Throwable e) {
+				log.error("", e);
+				append("Chyba!");
 				append(Notifications.stacktraceToString(e));
 //				Notifications.showError(Thread.currentThread(), e);
 			}
@@ -130,16 +132,16 @@ public class MainController implements Initializable {
 	}
 
 	private void fillComboBox() {
-		SettingsData data = Settings.load();
-		List<SettingsData.WakeUpClient> clients = data.getClients();
-		comboBox.getItems().addAll(clients.stream().map(SettingsData.WakeUpClient::getName).collect(Collectors.toList()));
+		UserData data = UserData.load();
+		List<UserData.WakeUpUser> users = data.getUsers();
+		usersComboBox.getItems().addAll(users.stream().map(UserData.WakeUpUser::getName).collect(Collectors.toList()));
 
-		String lastClient = data.getLastClient();
-		SingleSelectionModel<String> selectionModel = comboBox.getSelectionModel();
-		selectionModel.select(lastClient);
-		if (StringUtils.isBlank(lastClient)) {
-			for (SettingsData.WakeUpClient client : clients) {
-				selectionModel.select(client.getName());
+		String lastUser = data.getLastUser();
+		SingleSelectionModel<String> selectionModel = usersComboBox.getSelectionModel();
+		selectionModel.select(lastUser);
+		if (StringUtils.isBlank(lastUser)) {
+			for (UserData.WakeUpUser user : users) {
+				selectionModel.select(user.getName());
 				break;
 			}
 		}
