@@ -3,9 +3,6 @@
 
     <property name="LOGS" value="./logs"/>
 
-    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
-        <resetJUL>true</resetJUL>
-    </contextListener>
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">

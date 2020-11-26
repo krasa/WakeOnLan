@@ -26,7 +26,7 @@ public class JavaFxApplication extends Application {
 	private static final String WINDOW_HEIGHT = "Window_Height";
 	private static final double DEFAULT_WIDTH = 800;
 	private static final double DEFAULT_HEIGHT = 600;
-	private static final String NODE_NAME = "Propouzeč PC";
+	public static final String NODE_NAME = "ProbouzecPC";
 
 
 	@Override

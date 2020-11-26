@@ -3,7 +3,8 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.9'
 //    id 'edu.sc.seis.launch4j' version '2.4.9'
-    id "org.beryx.jlink" version "2.22.3"
+//    id "org.beryx.jlink" version "2.22.3"
+    id 'org.beryx.runtime' version '1.11.4'
 
 }
 
@@ -11,15 +12,13 @@ javafx {
     version = "13"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics']
 }
-jar {
-    enabled = true
-}
-
+//jar {
+//    enabled = true
+//}
 group = 'krasa.wakeonlan'
-version = '0.8'
+version = '0.9'
 sourceCompatibility = '13'
 targetCompatibility = '13'
-
 
 repositories {
     mavenCentral()
@@ -45,66 +44,44 @@ dependencies {
     implementation group: 'com.hierynomus', name: 'sshj', version: '0.30.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
-// https://mvnrepository.com/artifact/uk.org.lidalia/sysout-over-slf4j
-    implementation group: 'uk.org.lidalia', name: 'sysout-over-slf4j', version: '1.0.2'
 
 //    implementation 'org.springframework.boot:spring-boot-starter'
 //    testImplementation('org.springframework.boot:spring-boot-starter-test') {
 //        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 //    }
 }
-jar {
-    manifest {
-        attributes 'Implementation-Title': "ProbouzecPC",
-                'Main-Class': 'krasa.wakeonlan.WakeOnLanApplication'
-    }
-}
+mainClassName = 'krasa.wakeonlan/krasa.wakeonlan.Launcher'
 
-test {
-    useJUnitPlatform()
-}
-
+//jar {
+//    manifest {
+//        attributes 'Implementation-Title': "ProbouzecPC",
+//                'Main-Class': 'krasa.wakeonlan.Launcher'
+//    }
+//}
 
 application {
     mainClassName = "krasa.wakeonlan.WakeOnLanApplication"
     applicationName = 'ProbouzecPC'
 }
 
-jlink {
-    options = ['--strip-debug','--compress', '2', '--no-header-files', '--no-man-pages']
+//https://github.com/beryx-gist/badass-runtime-example-javafx
+runtime {
+    options = ['--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
-        name = 'Probouzec PC'
-        jvmArgs = ['-Dlogback.configurationFile=./logback.xml']
-
-        mergedModule {
-            additive = true
-            uses 'ch.qos.logback.classic.spi.Configurator'
-
-//        excludeRequires('java.security.jgss')
-            excludeRequires('java.desktop')
-            excludeProvides service: 'reactor.blockhound.integration.BlockHoundIntegration'
-            excludeProvides servicePattern: 'org.apache.logging.log4j.*'
-            excludeProvides service: 'javax.servlet.ServletContainerInitializer'
-        }
-
-        addExtraDependencies("javafx")
-        forceMerge("com.google.gson")
-
-        jpackage {
-            installerType = 'msi'
-            def currentOs = org.gradle.internal.os.OperatingSystem.current()
-            installerOptions += ['--resource-dir', "src/main/resources"]
-            installerOptions += ['--vendor', 'Nimblsoft']
-            imageOptions = ["--icon", "src/main/resources/krasa/wakeonlan/icon.ico"]
-            if (currentOs.windows) {
-                installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
-            }
+        noConsole = false
+    }
+    jpackage {
+        def currentOs = org.gradle.internal.os.OperatingSystem.current()
+        imageOptions = ["--icon", "src/main/resources/krasa/wakeonlan/icon.ico"]
+        installerOptions += ['--resource-dir', "src/main/resources"]
+        installerOptions += ['--vendor', 'Nimblsoft']
+        if(currentOs.windows) {
+            installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
         }
     }
-}           
-tasks.jlink.doLast {
-    copy {
-        from('src/main/resources/logback.xml')
-        into("$buildDir/image/bin/")
-    }
-} 
+    
+//   
+//    targetPlatform("win") {
+//        jdkHome = 'C:\\Users\\i7\\.jdks\\openjdk-15.0.1'
+//    }
+}
