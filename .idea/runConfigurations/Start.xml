@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Start" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="krasa.wakeonlan.WakeOnLanApplication" />
+    <option name="MAIN_CLASS_NAME" value="krasa.wakeonlan.Launcher" />
     <module name="WakeOnLan.main" />
     <method v="2">
       <option name="Make" enabled="true" />
