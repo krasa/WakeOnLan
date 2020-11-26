@@ -5,21 +5,20 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import krasa.wakeonlan.JavaFxApplication;
 import krasa.wakeonlan.SettingsData;
 import krasa.wakeonlan.utils.UiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
-public class Settings  implements Initializable {
+public class Settings implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(Settings.class);
 	public static final String FILE = "settings.json";
+	public static final String SETTINGS = "settings";
 	@FXML
 	public TextField password;
 	@FXML
@@ -32,33 +31,25 @@ public class Settings  implements Initializable {
 
 	public static SettingsData load() {
 		try {
-			File file = new File(FILE);
-			if (file.exists()) {
-				FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8);
-				SettingsData settingsData = new Gson().fromJson(fileReader, SettingsData.class);
-				fileReader.close();
+			Preferences preferences = Preferences.userRoot().node(JavaFxApplication.NODE_NAME);
+			String s = preferences.get(SETTINGS, "");
+			SettingsData settingsData = new Gson().fromJson(s, SettingsData.class);
 
-				if (settingsData == null) {
-					settingsData = new SettingsData();
-				}
-				return settingsData;
-			} else {
-				log.warn("settings does not exists");
-				return new SettingsData();
+			if (settingsData == null) {
+				settingsData = new SettingsData();
 			}
-		} catch (Exception e) {
+			return settingsData;
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static void save(SettingsData settingsData) {
 		try {
-			File file = new File(FILE);
-			FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
-			fileWriter.write(new Gson().toJson(settingsData));
-			fileWriter.close();
-
-		} catch (Exception e) {
+			String str = new Gson().toJson(settingsData);
+			Preferences preferences = Preferences.userRoot().node(JavaFxApplication.NODE_NAME);
+			preferences.put(SETTINGS, str);
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -74,16 +65,16 @@ public class Settings  implements Initializable {
 	}
 
 	public void cancel(ActionEvent actionEvent) {
-		 UiUtils.getStage(address).close();
+		UiUtils.getStage(address).close();
 	}
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		                                                                               
+
 		SettingsData load = load();
 		password.setText(load.getPassword());
-		user	.setText(load.getUser());
-		address	.setText(load.getAddress());
-		command	.setText(load.getCommand());
+		user.setText(load.getUser());
+		address.setText(load.getAddress());
+		command.setText(load.getCommand());
 	}
 }
