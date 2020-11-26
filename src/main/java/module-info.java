@@ -9,6 +9,7 @@ open module krasa.wakeonlan {
 	requires javafx.graphics;
 	requires com.google.gson;
 	requires slf4j.api;
-	requires logback.classic; //only runtime dependency
+	requires logback.classic;
+	requires sshj;
 
 }
