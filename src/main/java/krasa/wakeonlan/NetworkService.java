@@ -1,17 +1,31 @@
 package krasa.wakeonlan;
 
-import krasa.wakeonlan.controller.*;
-import krasa.wakeonlan.ssh.*;
-import org.springframework.stereotype.*;
+import krasa.wakeonlan.controller.MainController;
+import krasa.wakeonlan.controller.Settings;
+import krasa.wakeonlan.ssh.SshjProcess;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 
-@Service
 public class NetworkService {
 	List<SshjProcess> processList = new CopyOnWriteArrayList<>();
+
+	private ExecutorService executorService = Executors.newFixedThreadPool(4,
+			new ThreadFactory() {
+				public Thread newThread(Runnable r) {
+					Thread t = Executors.defaultThreadFactory().newThread(r);
+					t.setDaemon(true);
+					return t;
+				}
+			});
+
+	public void async(Runnable xxx) {
+		executorService.execute(xxx);
+	}
 
 	public void wakeUp(String ip, MainController mainController) throws IOException {
 		SshjProcess sshjProcess = new SshjProcess(ip, Settings.load());

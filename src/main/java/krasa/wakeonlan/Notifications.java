@@ -8,9 +8,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import krasa.wakeonlan.controller.ErrorController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import krasa.wakeonlan.controller.ErrorController;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,8 +35,7 @@ public class Notifications {
 	}
 
 	private static void showErrorDialog(Throwable e) {
-		StringWriter errorMsg = new StringWriter();
-		e.printStackTrace(new PrintWriter(errorMsg));
+		String text = stacktraceToString(e);
 		Stage dialog = new Stage();
 		dialog.setTitle("Error");
 		dialog.initModality(Modality.APPLICATION_MODAL);
@@ -45,12 +44,12 @@ public class Notifications {
 		try {
 			Parent root = loader.load();
 			ErrorController controller = (ErrorController) loader.getController();
-			controller.setErrorText(errorMsg.toString());
-			
+			controller.setErrorText(text);
+
 			Scene scene = new Scene(root, 800, 400);
 			String styleSheetURL = JavaFxApplication.class.getResource("dark.css").toString();
 			scene.getStylesheets().add(styleSheetURL);
-			
+
 			dialog.setScene(scene);
 			dialog.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
 				if (KeyCode.ESCAPE == event.getCode()) {
@@ -58,8 +57,16 @@ public class Notifications {
 				}
 			});
 			dialog.show();
+			dialog.requestFocus();
 		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
+	}
+
+	public static String stacktraceToString(Throwable e) {
+		StringWriter errorMsg = new StringWriter();
+		e.printStackTrace(new PrintWriter(errorMsg));
+		String text = errorMsg.toString();
+		return text;
 	}
 }

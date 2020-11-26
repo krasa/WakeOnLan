@@ -1,17 +1,21 @@
 package krasa.wakeonlan.controller;
 
-import com.google.gson.*;
-import javafx.event.*;
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import krasa.wakeonlan.*;
-import krasa.wakeonlan.utils.*;
-import org.slf4j.*;
+import com.google.gson.Gson;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.TextField;
+import krasa.wakeonlan.SettingsData;
+import krasa.wakeonlan.utils.UiUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ResourceBundle;
 
 public class Settings  implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(Settings.class);
@@ -33,9 +37,9 @@ public class Settings  implements Initializable {
 				FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8);
 				SettingsData settingsData = new Gson().fromJson(fileReader, SettingsData.class);
 				fileReader.close();
-				
+
 				if (settingsData == null) {
-					settingsData=new SettingsData();
+					settingsData = new SettingsData();
 				}
 				return settingsData;
 			} else {
@@ -53,7 +57,7 @@ public class Settings  implements Initializable {
 			FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
 			fileWriter.write(new Gson().toJson(settingsData));
 			fileWriter.close();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

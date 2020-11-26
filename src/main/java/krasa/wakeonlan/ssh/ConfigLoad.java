@@ -1,29 +1,34 @@
 package krasa.wakeonlan.ssh;
 
-import krasa.wakeonlan.*;
-import krasa.wakeonlan.controller.*;
-import net.schmizz.sshj.*;
-import net.schmizz.sshj.connection.channel.direct.*;
-import net.schmizz.sshj.transport.verification.*;
-import org.slf4j.*;
+import krasa.wakeonlan.SettingsData;
+import krasa.wakeonlan.controller.Settings;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigLoad {
 	private static final Logger log = LoggerFactory.getLogger(ConfigLoad.class);
 	protected static final Logger sshOutput = LoggerFactory.getLogger("ssh");
 
-	private final SettingsData settingsData;
 
 	private Session session;
 	private SSHClient ssh;
 
 	private volatile boolean stop;
+	private SettingsData settingsData;
 
 
-	public ConfigLoad(SettingsData settingsData) {
-		this.settingsData = settingsData;
+	public ConfigLoad() {
+		settingsData = Settings.load();
 	}
 
 	public void execute() {
@@ -55,7 +60,7 @@ public class ConfigLoad {
 			}
 			log.info("exit status: " + exitStatus);
 		} catch (Throwable e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Config load failed. Server=" + settingsData.getAddress(), e);
 		} finally {
 			try {
 				releaseResources();

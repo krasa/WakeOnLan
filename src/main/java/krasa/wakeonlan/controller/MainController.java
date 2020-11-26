@@ -16,15 +16,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import krasa.wakeonlan.JavaFxApplication;
 import krasa.wakeonlan.NetworkService;
+import krasa.wakeonlan.Notifications;
 import krasa.wakeonlan.SettingsData;
+import krasa.wakeonlan.ssh.ConfigLoad;
 import krasa.wakeonlan.utils.ThreadDump;
 import krasa.wakeonlan.utils.ThreadDumper;
-import net.rgielen.fxweaver.core.FxmlView;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,16 +34,17 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-@Component
-@FxmlView
 public class MainController implements Initializable {
 	private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
 
 	public TextArea status;
 	public ComboBox<String> comboBox;
-	@Autowired
 	NetworkService networkService;
+
+	public MainController() {
+		networkService = new NetworkService();
+	}
 
 	@FXML
 	public void wakeUp(ActionEvent actionEvent) {
@@ -115,6 +115,21 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
+		networkService.async(() -> {
+			try {
+				new ConfigLoad().execute();
+				Platform.runLater(this::fillComboBox);
+			} catch (Throwable e) {
+				append(Notifications.stacktraceToString(e));
+//				Notifications.showError(Thread.currentThread(), e);
+			}
+		});
+
+
+		fillComboBox();
+	}
+
+	private void fillComboBox() {
 		SettingsData data = Settings.load();
 		List<SettingsData.WakeUpClient> clients = data.getClients();
 		comboBox.getItems().addAll(clients.stream().map(SettingsData.WakeUpClient::getName).collect(Collectors.toList()));
@@ -122,7 +137,7 @@ public class MainController implements Initializable {
 		String lastClient = data.getLastClient();
 		SingleSelectionModel<String> selectionModel = comboBox.getSelectionModel();
 		selectionModel.select(lastClient);
-		if (Strings.isBlank(lastClient)) {
+		if (StringUtils.isBlank(lastClient)) {
 			for (SettingsData.WakeUpClient client : clients) {
 				selectionModel.select(client.getName());
 				break;
