@@ -43,7 +43,7 @@ public class SshjProcess {
 			ssh = new SSHClient();
 			ssh.addHostKeyVerifier(new PromiscuousVerifier());
 //			ssh.loadKnownHosts();
-			mainController.append("Connecting to: " + config.getAddress());
+			mainController.appendLater("Connecting to: " + config.getAddress());
 			String[] split = config.getAddress().split(":");
 			if (split.length != 2) {
 				throw new IllegalArgumentException("invalid server address (ip:port)");
@@ -55,11 +55,11 @@ public class SshjProcess {
 			session.allocateDefaultPTY();
 
 			String command = config.getCommand().replace("<mac>", user.getMac());
-			mainController.append("Executing command: " + command);
+			mainController.appendLater("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 
 			receiveLine(cmd.getInputStream(), mainController);
-			mainController.append("disconnecting");
+			mainController.appendLater("disconnecting");
 
 			log.info("disconnecting");
 			session.close();
@@ -77,7 +77,7 @@ public class SshjProcess {
 			} catch (Throwable e) {
 				log.error("process #finally failed", e);
 			}
-			mainController.append("done");
+			mainController.appendLater("done");
 		}
 	}
 
@@ -88,7 +88,7 @@ public class SshjProcess {
 
 		while (keepReceiving() && (line = r.readLine()) != null) {
 			sshOutput.info(line);
-			mainController.append("\t" + line);
+			mainController.appendLater("\t" + line);
 		}
 		log.debug("receiving done");
 	}

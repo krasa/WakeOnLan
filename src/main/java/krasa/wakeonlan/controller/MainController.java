@@ -112,21 +112,26 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
-		networkService.async(() -> {
-			try {
-				config = Config.load();
-				Platform.runLater(() -> append("Načítání uživatelů..."));
-				new UsersLoad(config).execute();
-				Platform.runLater(() -> append("OK"));
-				Platform.runLater(this::fillComboBox);
-			} catch (Throwable e) {
-				log.error("", e);
-				append("Chyba!");
-				append(Notifications.stacktraceToString(e));
-//				Notifications.showError(Thread.currentThread(), e);
-			}
-		});
-
+		try {
+			config = Config.load();
+			networkService.async(() -> {
+				try {
+					appendLater("Načítání uživatelů...");
+					new UsersLoad(config).execute();
+					appendLater("OK");
+					Platform.runLater(this::fillComboBox);
+				} catch (Throwable e) {
+					log.error("", e);
+					appendLater("Chyba!");
+					appendLater(Notifications.stacktraceToString(e));
+					//				Notifications.showError(Thread.currentThread(), e);
+				}
+			});
+		} catch (Throwable e) {
+			log.error("", e);
+			appendNow("Chyba!");
+			appendNow(Notifications.stacktraceToString(e));
+		}
 
 		fillComboBox();
 	}
@@ -151,7 +156,12 @@ public class MainController implements Initializable {
 		Platform.runLater(() -> displayException(ip, e));
 	}
 
-	public void append(String line) {
+	public void appendLater(String line) {
+		Platform.runLater(() -> status.appendText(line + "\n"));
+
+	}
+
+	public void appendNow(String line) {
 		Platform.runLater(() -> status.appendText(line + "\n"));
 
 	}

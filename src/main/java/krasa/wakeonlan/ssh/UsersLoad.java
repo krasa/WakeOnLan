@@ -60,7 +60,7 @@ public class UsersLoad {
 			}
 			log.info("exit status: " + exitStatus);
 		} catch (Throwable e) {
-			throw new RuntimeException("Config load failed. Server=" + config.getAddress(), e);
+			throw new RuntimeException("Load failed. Server=" + config.getAddress(), e);
 		} finally {
 			try {
 				releaseResources();
