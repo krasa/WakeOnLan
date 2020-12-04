@@ -14,6 +14,9 @@ tasks.withType(JavaCompile) {
 javafx {
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics']
 }
+if(JavaVersion.current() == JavaVersion.VERSION_15){
+    throw new GradleException("JDK 15 je rozbity, pouzij 14!")
+}
 
 def buildNumberFile = new File('buildNumber')
 if (!buildNumberFile.exists()) {
