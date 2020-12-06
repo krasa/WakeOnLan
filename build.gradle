@@ -62,7 +62,7 @@ application {
 runtime {
     options = ['--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
-        jvmArgs = ['-Dlogback.configurationFile=.conf/logback.xml']
+        jvmArgs = ['-Dlogback.configurationFile=conf/logback.xml']
         noConsole = false
     }
     jpackage {
