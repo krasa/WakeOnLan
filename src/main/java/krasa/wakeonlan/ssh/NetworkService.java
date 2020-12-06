@@ -13,7 +13,7 @@ import java.util.TimerTask;
 import java.util.concurrent.*;
 
 public class NetworkService {
-	List<SshjProcess> processList = new CopyOnWriteArrayList<>();
+	List<WakeUpProcess> processList = new CopyOnWriteArrayList<>();
 
 	private ExecutorService executorService = Executors.newFixedThreadPool(4,
 			new ThreadFactory() {
@@ -29,17 +29,17 @@ public class NetworkService {
 	}
 
 	public void wakeUp(UserData.WakeUpUser user, MainController mainController, Config config) throws IOException {
-		SshjProcess sshjProcess = new SshjProcess(user, config);
+		WakeUpProcess wakeUpProcess = new WakeUpProcess(user, config);
 		CompletableFuture.supplyAsync(() -> {
 			try {
-				processList.add(sshjProcess);
-				sshjProcess.execute(mainController);
+				processList.add(wakeUpProcess);
+				wakeUpProcess.execute(mainController);
 			} catch (Throwable e) {
 				Notifications.showError(Thread.currentThread(), e);
 			}
 			return "OK";
 		}).whenCompleteAsync((s, throwable) -> {
-			processList.remove(sshjProcess);
+			processList.remove(wakeUpProcess);
 		});
 	}
 
@@ -50,13 +50,13 @@ public class NetworkService {
 	}
 
 	public void kill() {
-		for (SshjProcess sshjProcess : processList) {
-			sshjProcess.stop();
+		for (WakeUpProcess wakeUpProcess : processList) {
+			wakeUpProcess.stop();
 
 			new Timer(true).schedule(new TimerTask() {
 				@Override
 				public void run() {
-					sshjProcess.kill();
+					wakeUpProcess.kill();
 				}
 			}, 5000);
 		}

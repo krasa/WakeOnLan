@@ -18,6 +18,7 @@ import krasa.wakeonlan.JavaFxApplication;
 import krasa.wakeonlan.data.Config;
 import krasa.wakeonlan.data.UserData;
 import krasa.wakeonlan.ssh.NetworkService;
+import krasa.wakeonlan.ssh.Updater;
 import krasa.wakeonlan.ssh.UsersLoad;
 import krasa.wakeonlan.utils.ThreadDump;
 import krasa.wakeonlan.utils.ThreadDumper;
@@ -116,15 +117,28 @@ public class MainController implements Initializable {
 			config = Config.load();
 			networkService.async(() -> {
 				try {
-					appendLater("Načítání uživatelů...");
-					new UsersLoad(config).execute();
-					appendLater("OK");
-					Platform.runLater(this::fillComboBox);
+					new Updater(config, this).execute();
 				} catch (Throwable e) {
 					log.error("", e);
 					appendLater("Chyba!");
 					appendLater(Notifications.stacktraceToString(e));
 					//				Notifications.showError(Thread.currentThread(), e);
+				}
+			});
+			networkService.async(() -> {
+				try {
+					int users = new UsersLoad(config).execute();
+					if (users > 0) {
+						appendLater("Načítání uživatelů - OK");
+					} else {
+						appendLater("Načítání uživatelů - Selhalo");
+					}
+					Platform.runLater(this::fillComboBox);
+				} catch (Throwable e) {
+					log.error("", e);
+					appendLater("Chyba!");
+					appendLater(Notifications.stacktraceToString(e));
+					//	Notifications.showError(Thread.currentThread(), e);
 				}
 			});
 		} catch (Throwable e) {
