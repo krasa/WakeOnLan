@@ -1,5 +1,6 @@
 package krasa.wakeonlan.ssh;
 
+import krasa.wakeonlan.JavaFxApplication;
 import krasa.wakeonlan.controller.MainController;
 import krasa.wakeonlan.data.Config;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -8,10 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
 
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
@@ -31,14 +33,14 @@ public class Updater extends AbstractSshProcess {
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
-			String command = "ls -t ./update/ | tail -n 1";
+			String command = "ls -t ./update/ | head -1";
 			log.info("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 
 			String fileName = processOutput(cmd.getInputStream());
 			log.info(fileName);
 			if (fileName.endsWith("exe") || fileName.endsWith("msi")) {
-				String currentVersion = getCurrentVersion();
+				String currentVersion = JavaFxApplication.getCurrentVersion();
 				log.info("currentVersion={}", currentVersion);
 				String serverVersion = substringBeforeLast(substringAfter(fileName, "-"), ".");
 				log.info("serverVersion={}", serverVersion);
@@ -73,23 +75,6 @@ public class Updater extends AbstractSshProcess {
 				log.error("process #finally failed", e);
 			}
 		}
-	}
-
-	private String getCurrentVersion() throws IOException {
-		Object o = System.getProperties().get("javafx.runtime.version");
-
-
-		String[] apps = Path.of("app").toFile().list((dir, name) -> name.endsWith(".cfg"));
-		String currentVersion = null;
-		for (String app : apps) {
-			Path app1 = Path.of("app", app);
-			String s = Files.readString(app1);
-			Properties properties = new Properties();
-			properties.load(new FileInputStream(app1.toFile()));
-			currentVersion = properties.getProperty("app.version");
-			break;
-		}
-		return currentVersion;
 	}
 
 

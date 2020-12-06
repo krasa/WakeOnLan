@@ -15,7 +15,11 @@ import krasa.wakeonlan.controller.Notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 import java.util.prefs.Preferences;
 
 
@@ -28,6 +32,7 @@ public class JavaFxApplication extends Application {
 	private static final double DEFAULT_WIDTH = 800;
 	private static final double DEFAULT_HEIGHT = 600;
 	public static final String NODE_NAME = "ProbouzecPC";
+
 
 
 	@Override
@@ -48,7 +53,7 @@ public class JavaFxApplication extends Application {
 
 		// enable style
 		scene.getStylesheets().add(styleSheetURL);
-		stage.setTitle("Probouze\u010D PC");
+		stage.setTitle("Probouze\u010D PC v" + getCurrentVersion());
 		stage.setScene(scene);
 		stage.setOnCloseRequest((final WindowEvent event) -> {
 			Preferences preferences = Preferences.userRoot().node(NODE_NAME);
@@ -87,4 +92,22 @@ public class JavaFxApplication extends Application {
 		Platform.exit();
 	}
 
+	public static String getCurrentVersion() throws IOException {
+		try {
+			String[] apps = Path.of("app").toFile().list((dir, name) -> name.endsWith(".cfg"));
+			String currentVersion = null;
+			for (String app : apps) {
+				Path app1 = Path.of("app", app);
+				String s = Files.readString(app1);
+				Properties properties = new Properties();
+				properties.load(new FileInputStream(app1.toFile()));
+				currentVersion = properties.getProperty("app.version");
+				break;
+			}
+			return currentVersion;
+		} catch (Throwable e) {
+			log.error("", e);
+			return "0";
+		}
+	}
 }
