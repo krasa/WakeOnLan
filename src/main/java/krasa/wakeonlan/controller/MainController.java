@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextArea;
@@ -39,6 +40,8 @@ public class MainController implements Initializable {
 
 	public TextArea status;
 	public ComboBox<String> usersComboBox;
+	public Button wakeUp;
+	public Button remoteDesktop;
 
 	private NetworkService networkService;
 	private volatile Config config = new Config();
@@ -113,6 +116,13 @@ public class MainController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
+		wakeUp.disableProperty().bind(
+				usersComboBox.valueProperty().isNull());
+		remoteDesktop.disableProperty().bind(
+				usersComboBox.valueProperty().isNull()
+		);
+
+
 		try {
 			config = Config.load();
 			networkService.async(() -> {

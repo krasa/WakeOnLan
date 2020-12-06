@@ -11,8 +11,10 @@
        <FlowPane hgap="10.0" prefHeight="45.0" prefWidth="380.0" vgap="10.0">
          <children>
              <ComboBox fx:id="usersComboBox" prefHeight="25.0" prefWidth="203.0"/>
-             <Button mnemonicParsing="false" onAction="#wakeUp" prefHeight="25.0" prefWidth="65.0" text="Probudit"/>
-             <Button mnemonicParsing="false" onAction="#remoteDesktop" prefHeight="25.0" prefWidth="65.0"
+             <Button fx:id="wakeUp" mnemonicParsing="false" onAction="#wakeUp" prefHeight="25.0" prefWidth="65.0"
+                     text="Probudit"/>
+             <Button fx:id="remoteDesktop" mnemonicParsing="false" onAction="#remoteDesktop" prefHeight="25.0"
+                     prefWidth="65.0"
                      text="Připojit"/>
          </children>
          <padding>

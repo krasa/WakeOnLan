@@ -24,18 +24,18 @@ public class WakeUpProcess extends AbstractSshProcess {
 
 	public void execute(MainController mainController) throws Throwable {
 		try {
-			mainController.appendLater("Connecting to: " + config.getAddress());
+			mainController.appendLater("Probouzím: " + user.getName());
 			connect();
 
 			session = ssh.startSession();
 			session.allocateDefaultPTY();
 
 			String command = config.getCommand().replace("<mac>", user.getMac());
-			mainController.appendLater("Executing command: " + command);
+			log.info("Executing command: " + command);
 			Session.Command cmd = session.exec(command);
 
 			processOutput(cmd.getInputStream(), mainController);
-			mainController.appendLater("disconnecting");
+			mainController.appendLater("Hotovo");
 
 			log.info("disconnecting");
 			session.close();
@@ -53,7 +53,6 @@ public class WakeUpProcess extends AbstractSshProcess {
 			} catch (Throwable e) {
 				log.error("process #finally failed", e);
 			}
-			mainController.appendLater("done");
 		}
 	}
 
