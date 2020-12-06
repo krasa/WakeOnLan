@@ -120,7 +120,7 @@ public class MainController implements Initializable {
 					new Updater(config, this).execute();
 				} catch (Throwable e) {
 					log.error("", e);
-					appendLater("Chyba!");
+					appendLater("Aktualizace - Chyba");
 					appendLater(Notifications.stacktraceToString(e));
 					//				Notifications.showError(Thread.currentThread(), e);
 				}
@@ -136,9 +136,9 @@ public class MainController implements Initializable {
 					Platform.runLater(this::fillComboBox);
 				} catch (Throwable e) {
 					log.error("", e);
-					appendLater("Chyba!");
+					appendLater("Načítání uživatelů - Chyba");
 					appendLater(Notifications.stacktraceToString(e));
-					//	Notifications.showError(Thread.currentThread(), e);
+					//				Notifications.showError(Thread.currentThread(), e);
 				}
 			});
 		} catch (Throwable e) {

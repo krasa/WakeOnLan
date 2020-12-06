@@ -10,7 +10,9 @@ compileJava.options.encoding = 'UTF-8'
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
-
+test {
+    useJUnitPlatform()
+}
 javafx {
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics']
 }
@@ -46,7 +48,9 @@ dependencies {
     implementation group: 'com.hierynomus', name: 'sshj', version: '0.30.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
-
+             
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 application {
@@ -69,6 +73,7 @@ runtime {
         installerOptions += ['--verbose']
         if(currentOs.windows) {
             installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
+            installerOptions += ['--win-menu-group', 'Probouzec PC']
         }
     }
     

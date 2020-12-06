@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Start" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="krasa.wakeonlan.Launcher" />
-    <module name="Probouzeč_PC.main" />
+    <module name="Probouzec_PC.main" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

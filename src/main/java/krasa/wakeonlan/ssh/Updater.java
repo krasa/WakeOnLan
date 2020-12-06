@@ -3,9 +3,9 @@ package krasa.wakeonlan.ssh;
 import krasa.wakeonlan.JavaFxApplication;
 import krasa.wakeonlan.controller.MainController;
 import krasa.wakeonlan.data.Config;
+import krasa.wakeonlan.utils.Version;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.xfer.FileSystemFile;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,8 @@ public class Updater extends AbstractSshProcess {
 				log.info("currentVersion={}", currentVersion);
 				String serverVersion = substringBeforeLast(substringAfter(fileName, "-"), ".");
 				log.info("serverVersion={}", serverVersion);
-				if (!StringUtils.equals(serverVersion, currentVersion)) {
+
+				if (isNewer(currentVersion, serverVersion)) {
 					FileSystemFile localFile = new FileSystemFile(Files.createTempFile("", fileName).toFile());
 					log.info("downloading {}", "./update/" + fileName);
 					int copy = ssh.newSCPFileTransfer().newSCPDownloadClient().copy("\"./update/" + fileName + "\"", localFile);
@@ -75,6 +76,10 @@ public class Updater extends AbstractSshProcess {
 				log.error("process #finally failed", e);
 			}
 		}
+	}
+
+	protected static boolean isNewer(String currentVersion, String serverVersion) {
+		return new Version(serverVersion).compareTo(new Version(currentVersion)) > 0;
 	}
 
 

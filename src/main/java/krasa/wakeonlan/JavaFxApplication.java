@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
@@ -94,15 +94,19 @@ public class JavaFxApplication extends Application {
 
 	public static String getCurrentVersion() throws IOException {
 		try {
-			String[] apps = Path.of("app").toFile().list((dir, name) -> name.endsWith(".cfg"));
-			String currentVersion = null;
-			for (String app : apps) {
-				Path app1 = Path.of("app", app);
-				String s = Files.readString(app1);
-				Properties properties = new Properties();
-				properties.load(new FileInputStream(app1.toFile()));
-				currentVersion = properties.getProperty("app.version");
-				break;
+			String[] cfg = Path.of("app").toFile().list((dir, name) -> name.endsWith(".cfg"));
+			if (cfg == null || cfg.length != 1) {
+				log.error("cfg=" + Arrays.toString(cfg));
+			}
+			String currentVersion = "0";
+			if (cfg != null) {
+				for (String app : cfg) {
+					Path app1 = Path.of("app", app);
+					Properties properties = new Properties();
+					properties.load(new FileInputStream(app1.toFile()));
+					currentVersion = properties.getProperty("app.version");
+					break;
+				}
 			}
 			return currentVersion;
 		} catch (Throwable e) {
