@@ -21,6 +21,6 @@
             <Insets left="10.0" top="10.0" />
          </padding>
       </FlowPane>
-       <TextArea fx:id="status" prefHeight="157.0" prefWidth="380.0" VBox.vgrow="ALWAYS"/>
+       <TextArea fx:id="status" prefHeight="157.0" prefWidth="380.0" VBox.vgrow="ALWAYS" editable="false"/>
    </children>
 </VBox>
