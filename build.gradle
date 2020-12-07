@@ -28,8 +28,8 @@ def buildNumber =  buildNumberFile.text
 if (!buildNumber.isNumber()) {
     buildNumber="0"
 }
-buildNumber++
-new File('buildNumber').setText(buildNumber)
+buildNumber = buildNumber.toInteger().next()
+new File('buildNumber').setText(buildNumber.toString())
 version = '0.10.'+buildNumber
 
 repositories {
@@ -65,7 +65,8 @@ runtime {
         jvmArgs = ['-Dlogback.configurationFile=conf/logback.xml']
         noConsole = false
     }
-    jpackage {
+    jpackage {                   
+        installerType = 'msi'
         def currentOs = org.gradle.internal.os.OperatingSystem.current()
         imageOptions = ["--icon", "src/main/resources/krasa/wakeonlan/icon.ico"]
         installerOptions += ['--resource-dir', "src/main/resources"]
