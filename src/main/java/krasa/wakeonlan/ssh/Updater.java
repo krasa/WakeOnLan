@@ -50,8 +50,8 @@ public class Updater extends AbstractSshProcess {
                 log.info("serverVersion={}", serverVersion);
 
                 if (isNewer(currentVersion, serverVersion)) {
-                    mainController.appendLater(" - stahuji novou verzi...");
-                    mainController.appendLater("Instalace začne během několika minut");
+                    mainController.appendLater(" - nalezeno!");
+                    // mainController.appendLater("Instalace začne během několika minut");
 
                     FileSystemFile localFile = new FileSystemFile(Files.createTempFile("", fileName).toFile());
                     log.info("downloading {}", "./update/" + fileName);
