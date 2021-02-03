@@ -62,6 +62,7 @@ public abstract class AbstractSshProcess {
 	protected SSHClient connect() throws IOException {
 		log.info("Connecting to: " + config.getAddress());
 		ssh = new SSHClient();
+		ssh.setConnectTimeout(3000);
 		ssh.addHostKeyVerifier(new PromiscuousVerifier());
 //			ssh.loadKnownHosts();
 		String[] split = config.getAddress().split(":");

@@ -30,7 +30,7 @@ if (!buildNumber.isNumber()) {
 }
 buildNumber = buildNumber.toInteger().next()
 new File('buildNumber').setText(buildNumber.toString())
-version = '0.10.'+buildNumber
+version = '1.13.'+buildNumber
 
 repositories {
     mavenCentral()

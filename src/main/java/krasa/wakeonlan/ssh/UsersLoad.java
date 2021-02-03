@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class UsersLoad extends AbstractSshProcess {
 		super(config);
 	}
 
-	public int execute() {
+	public int execute() throws IOException {
 		try {
 			ssh = connect();
 
@@ -41,6 +42,8 @@ public class UsersLoad extends AbstractSshProcess {
 			}
 			log.info("exit status: " + exitStatus);
 			return users;
+		} catch (IOException e) {
+			throw e;
 		} catch (Throwable e) {
 			throw new RuntimeException("Load failed. Server=" + config.getAddress(), e);
 		} finally {
@@ -54,7 +57,7 @@ public class UsersLoad extends AbstractSshProcess {
 
 
 	public int processOutput(InputStream inputStream) throws IOException {
-		BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+		BufferedReader r = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 		String line;
 		UserData userData = UserData.load();
 		List<UserData.WakeUpUser> users = new ArrayList<>();

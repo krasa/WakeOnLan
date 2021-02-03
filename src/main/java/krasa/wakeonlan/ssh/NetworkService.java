@@ -4,6 +4,7 @@ import krasa.wakeonlan.controller.MainController;
 import krasa.wakeonlan.controller.Notifications;
 import krasa.wakeonlan.data.Config;
 import krasa.wakeonlan.data.UserData;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -44,6 +45,9 @@ public class NetworkService {
 	}
 
 	public boolean ping(String ip) throws IOException {
+		if (StringUtils.isBlank(ip)) {
+			throw new RuntimeException("Invalid ip: " + ip);
+		}
 		InetAddress address = InetAddress.getByName(ip);
 		boolean reachable = address.isReachable(1000);
 		return reachable;

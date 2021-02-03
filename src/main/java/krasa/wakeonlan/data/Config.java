@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class Config {
 	private static final Logger log = LoggerFactory.getLogger(Config.class);
 
+	String vpnServerIp = "";
 	String password = "";
 	String address = "";
 	String user = "";
@@ -29,6 +30,14 @@ public class Config {
 			log.error("Config not found, current Path=" + new File("").getAbsolutePath());
 			throw new IllegalStateException("Je to rozbite. Chybi config: " + file.getAbsolutePath());
 		}
+	}
+
+	public String getVpnServerIp() {
+		return vpnServerIp;
+	}
+
+	public void setVpnServerIp(String vpnServerIp) {
+		this.vpnServerIp = vpnServerIp;
 	}
 
 	public String getCommand() {

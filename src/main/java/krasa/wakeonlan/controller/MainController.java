@@ -122,35 +122,65 @@ public class MainController implements Initializable {
 				usersComboBox.valueProperty().isNull()
 		);
 
-
 		try {
 			config = Config.load();
+			appendLater("Ověřování připojení k VPN");
+
 			networkService.async(() -> {
 				try {
-					new Updater(config, this).execute();
-				} catch (Throwable e) {
-					log.error("", e);
-					appendLater("Aktualizace - Chyba");
-					appendLater(Notifications.stacktraceToString(e));
-					//				Notifications.showError(Thread.currentThread(), e);
-				}
-			});
-			networkService.async(() -> {
-				try {
-					int users = new UsersLoad(config).execute();
-					if (users > 0) {
-						appendLater("Načítání uživatelů - OK");
+					boolean ok = networkService.ping(config.getVpnServerIp());
+					if (ok) {
+						log.info("ping ok");
+						appendLater("Připojení k VPN - OK");
+						appendLater("Připojování k WOL serveru");
+
+						networkService.async(() -> {
+							try {
+								appendLaterWithoutNewLine("Vyhledávání aktualizací programu");
+								new Updater(config, this).execute();
+							} catch (IOException e) {
+								log.error("", e);
+								appendLater(" - chyba připojení");
+							} catch (Throwable e) {
+								log.error("", e);
+								appendLater(" - chyba");
+//									appendLater(Notifications.stacktraceToString(e));
+								//	Notifications.showError(Thread.currentThread(), e);
+							}
+
+							try {
+								appendLaterWithoutNewLine("Načítání uživatelů");
+								int users = new UsersLoad(config).execute();
+								if (users > 0) {
+									appendLater(" - OK");
+								} else {
+									appendLater(" - chyba");
+								}
+								Platform.runLater(this::fillComboBox);
+							} catch (IOException e) {
+								log.error("", e);
+								appendLater(" - chyba připojení");
+							} catch (Throwable e) {
+								log.error("", e);
+								appendLater(" - chyba");
+								//	appendLater(Notifications.stacktraceToString(e));
+								//	Notifications.showError(Thread.currentThread(), e);
+							}
+						});
+
 					} else {
-						appendLater("Načítání uživatelů - Selhalo");
+						log.info("ping fail");
+						appendLater("Chyba - nimbl ma maleho pindika");
 					}
-					Platform.runLater(this::fillComboBox);
 				} catch (Throwable e) {
-					log.error("", e);
-					appendLater("Načítání uživatelů - Chyba");
+					log.warn("", e);
 					appendLater(Notifications.stacktraceToString(e));
+					appendLater("Obecná chyba, kontaktujte administrátora.");
 					//				Notifications.showError(Thread.currentThread(), e);
 				}
 			});
+
+
 		} catch (Throwable e) {
 			log.error("", e);
 			appendNow("Chyba!");
@@ -163,15 +193,19 @@ public class MainController implements Initializable {
 	private void fillComboBox() {
 		UserData data = UserData.load();
 		List<UserData.WakeUpUser> users = data.getUsers();
-		usersComboBox.getItems().addAll(users.stream().map(UserData.WakeUpUser::getName).collect(Collectors.toList()));
+		usersComboBox.getItems().clear();
+		List<String> collect = users.stream().map(UserData.WakeUpUser::getName).sorted().collect(Collectors.toList());
+		usersComboBox.getItems().addAll(collect);
 
 		String lastUser = data.getLastUser();
-		SingleSelectionModel<String> selectionModel = usersComboBox.getSelectionModel();
-		selectionModel.select(lastUser);
-		if (StringUtils.isBlank(lastUser)) {
-			for (UserData.WakeUpUser user : users) {
-				selectionModel.select(user.getName());
-				break;
+		if (collect.contains(lastUser)) {
+			SingleSelectionModel<String> selectionModel = usersComboBox.getSelectionModel();
+			selectionModel.select(lastUser);
+			if (StringUtils.isBlank(lastUser)) {
+				for (UserData.WakeUpUser user : users) {
+					selectionModel.select(user.getName());
+					break;
+				}
 			}
 		}
 	}
@@ -182,7 +216,10 @@ public class MainController implements Initializable {
 
 	public void appendLater(String line) {
 		Platform.runLater(() -> status.appendText(line + "\n"));
+	}
 
+	public void appendLaterWithoutNewLine(String line) {
+		Platform.runLater(() -> status.appendText(line));
 	}
 
 	public void appendNow(String line) {
@@ -193,4 +230,5 @@ public class MainController implements Initializable {
 	public void kill(ActionEvent actionEvent) {
 		networkService.kill();
 	}
+
 }
