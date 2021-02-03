@@ -121,15 +121,20 @@ public class Updater extends AbstractSshProcess {
         @Override
         public StreamCopier.Listener file(final String name, final long size) {
             return new StreamCopier.Listener() {
+                private long percent;
+
                 @Override
                 public void reportProgress(long transferred) throws IOException {
-                    long percent = 100;
+                    percent = 100;
+                    long newPercent;
                     if (size > 0) {
-                        percent = (transferred * 100) / size;
+                        newPercent = (transferred * 100) / size;
+                        if (percent != newPercent) {
+                            mainController.appendProgress(percent, newPercent);
+                            percent = newPercent;
+                        }
                     }
-                    mainController.appendLater("transferred " + percent + "%");
                 }
-
             };
         }
 

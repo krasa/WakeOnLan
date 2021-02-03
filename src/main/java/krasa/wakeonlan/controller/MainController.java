@@ -231,4 +231,16 @@ public class MainController implements Initializable {
 		networkService.kill();
 	}
 
+	public void appendProgress(long percent, long newPercent) {
+		Platform.runLater(() -> {
+			String text = status.getText();
+			int i = text.lastIndexOf("\n");
+			int i2 = text.indexOf(String.valueOf(percent), i);
+			String substring = text;
+			if (i2 > 0) {
+				substring = text.substring(0, i2);
+			}
+			status.setText(substring + newPercent);
+		});
+	}
 }
