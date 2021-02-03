@@ -129,7 +129,7 @@ public class Updater extends AbstractSshProcess {
                     if (size > 0) {
                         newPercent = (transferred * 100) / size;
                         if (percent != newPercent) {
-                            mainController.appendProgress(percent, newPercent);
+                            mainController.appendProgress("Stahuji... " + newPercent + "%");
                             percent = newPercent;
                         }
                     }

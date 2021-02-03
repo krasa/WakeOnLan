@@ -243,4 +243,11 @@ public class MainController implements Initializable {
 			status.setText(substring + newPercent);
 		});
 	}
+
+	public void appendProgress(String s) {
+		Platform.runLater(() -> {
+			String text = status.getText();
+			status.setText(text.substring(0, text.lastIndexOf("\n")) + "\n" + s);
+		});
+	}
 }
