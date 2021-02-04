@@ -170,12 +170,12 @@ public class MainController implements Initializable {
 
 					} else {
 						log.info("ping fail");
-						appendLater("Chyba - nimbl ma maleho pindika");
+						appendLater("Chyba - zkontrolujte, že připojeni VPN je aktivní");
 					}
 				} catch (Throwable e) {
 					log.warn("", e);
 					appendLater(Notifications.stacktraceToString(e));
-					appendLater("Obecná chyba, kontaktujte administrátora.");
+					appendLater("Obecná chyba, kontaktujte administrátora");
 					//				Notifications.showError(Thread.currentThread(), e);
 				}
 			});
